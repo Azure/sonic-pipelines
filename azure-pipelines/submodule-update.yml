@@ -21,7 +21,6 @@ jobs:
     - checkout: none
     - bash: |
         set -ex
-        pwd
         rm -rf sonic-buildimage
         git clone https://github.com/sonic-net/sonic-buildimage
         cd sonic-buildimage
@@ -29,7 +28,7 @@ jobs:
         git submodule update --init --recursive
     - bash: |
         set -ex
-        pwd
+        cd sonic-buildimage
         while read -r line
         do
           path=$(echo $line| awk '{print$2}')
