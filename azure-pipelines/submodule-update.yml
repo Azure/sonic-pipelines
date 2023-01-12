@@ -1,0 +1,61 @@
+pr: none
+trigger: none
+schedules:
+- cron: "0 0 * * *"
+  displayName: Daily build
+  branches:
+    include:
+      - master
+
+parameters:
+- name: branches
+  type: object
+  default:
+  - master
+
+jobs:
+- ${{ each branch in parameters.branches }}:
+  - job:
+    displayName: ${{ branch }}
+    steps:
+    - checkout: none
+    - bash: |
+        set -ex
+        pwd
+        rm -rf sonic-buildimage
+        git clone https://github.com/sonic-net/sonic-buildimage
+        cd sonic-buildimage
+        git checkout ${{ branch }}
+        git submodule update --init --recursive
+    - bash: |
+        set -ex
+        pwd
+        while read -r line
+        do
+          path=$(echo $line| awk '{print$2}')
+          pushd $path
+          # 1. only keep repos in sonic-net organization
+          git remote -vv | grep github.com/sonic-net/ || continue
+
+          # same branch as sonic-buildimage
+          git branch -a | grep remotes/origin/${{ branch }} && branch=${{ branch }} || true
+
+          # only one branch contains current HEAD
+          [[ "$branch" == "" ]] && [[ $(git branch -a --contains HEAD | grep -cv 'HEAD detached at') == 1 ]] && \
+          branch=$(git branch -a --contains HEAD | grep -v 'HEAD detached at' | sed -e 's#remotes/origin/##' -e 's# ##g') || true
+
+          [[ "$branch" == "" ]] && echo "==============================================" && echo "$path : no branch found!" && continue
+          git checkout $branch
+          git pull
+          popd
+        done < <(git submodule)
+        git add .
+        git status | grep -e 'deleted:' -e 'new file:' && exit 1
+        git status
+        exit 0
+        git commit -m "[submodule] Update submodule to the latest HEAD automatically"
+        git remote add sonicbld https://github.com/mssonicbld/sonic-buildimage
+        git fetch sonicbld
+        git push sonicbld HEAD:submodule/$(date +%F)$(Build.BuildId)
+        gh
+
