@@ -34,7 +34,7 @@ jobs:
           path=$(echo $line| awk '{print$2}')
           pushd $path
           # 1. only keep repos in sonic-net organization
-          git remote -vv | grep github.com/sonic-net/ || continue
+          git remote -vv | grep github.com/sonic-net/ || popd && continue
 
           # same branch as sonic-buildimage
           git branch -a | grep remotes/origin/${{ branch }} && branch=${{ branch }} || true
@@ -43,7 +43,7 @@ jobs:
           [[ "$branch" == "" ]] && [[ $(git branch -a --contains HEAD | grep -cv 'HEAD detached at') == 1 ]] && \
           branch=$(git branch -a --contains HEAD | grep -v 'HEAD detached at' | sed -e 's#remotes/origin/##' -e 's# ##g') || true
 
-          [[ "$branch" == "" ]] && echo "==============================================" && echo "$path : no branch found!" && continue
+          [[ "$branch" == "" ]] && echo "==============================================" && echo "$path : no branch found!" && popd && continue
           git checkout $branch
           git pull
           popd
