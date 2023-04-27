@@ -23,13 +23,10 @@ stages:
   - job: Build
     timeoutInMinutes: 120
     steps:
-    - task: UsePythonVersion@0
-      inputs:
-        versionSpec: '3.x'
-        addToPath: true
-        architecture: 'x64'
     - script: |
-        pip install azure-storage-queue azure-storage-blob
+        sudo apt-get update
+        sudo apt-get install -y python3-pip
+        sudo pip3 install azure-storage-queue azure-storage-blob
       displayName: Install build tools
     - task: PythonScript@0
       displayName: Publish SONiC telemetry
