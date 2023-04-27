@@ -27,6 +27,8 @@ stages:
         sudo apt-get update
         sudo apt-get install -y python3-pip
         sudo pip3 install azure-storage-queue azure-storage-blob
+        python --version
+        python -c 'from urllib import request; print(request)' 
       displayName: Install build tools
     - task: PythonScript@0
       displayName: Publish SONiC telemetry
