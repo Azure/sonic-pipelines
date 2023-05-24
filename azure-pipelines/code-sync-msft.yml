@@ -16,9 +16,9 @@ resources:
   repositories:
   - repository: buildimage
     type: github
-    name: sonic-net/sonic-buildimage-msft
+    name: Azure/sonic-buildimage-msft
     ref: master
-    endpoint: sonic-net
+    endpoint: build
 
 steps:
   - checkout: buildimage
