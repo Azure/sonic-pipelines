@@ -1,11 +1,5 @@
 pr: none
 trigger: none
-schedules:
-- cron: "19 1 * * *"
-  displayName: Daily build
-  branches:
-    include:
-      - master
 
 parameters:
 - name: branches
@@ -27,7 +21,7 @@ jobs:
         set -ex
         sudo rm -rf sonic-buildimage-msft
         git clone https://github.com/azure/sonic-buildimage-msft
-        cd sonic-buildimage
+        cd sonic-buildimage-msft
         git config user.email $(user_email)
         git config user.name $(user_name)
         git config credential.https://github.com.username $(user_name)
@@ -41,7 +35,7 @@ jobs:
       displayName: Setup env
     - bash: |
         set -e
-        cd sonic-buildimage
+        cd sonic-buildimage-msft
         work_space=$(pwd)
         while read -r line
         do
