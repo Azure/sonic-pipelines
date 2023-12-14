@@ -19,14 +19,14 @@ name: $(TeamProject)_$(Build.DefinitionName)_$(SourceBranchName)_$(Date:yyyyMMdd
 stages:
 - stage: Build
   variables:
-  - group: Debian-Mirror-Common
+  - group: SONIC-PUBLIC-ACR
   jobs:
   - job: Build
     pool: sonicbld-armhf
     timeoutInMinutes: 120
     steps:
     - script: |
-        az login -u $(ApplicationId) --service-principal --tenant $(AzureTenant) -p "$ApplicationKey"
+        docker login -u $(DOCKER_USER) -p $(DOCKER_PASSWORD) publicmirror.azurecr.io
         set -ex
         [ -z "$IMAGE_PREFIX" ] && IMAGE_PREFIX=publicmirror.azurecr.io/debian:
         [ -z "$DISTRIBUTIONS" ] && DISTRIBUTIONS="bullseye bookworm"
