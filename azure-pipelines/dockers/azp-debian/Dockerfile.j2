@@ -1,0 +1,8 @@
+FROM {{ baseImage }}
+
+MAINTAINER sonicbuildadmin@microsoft.com
+
+RUN apt update && apt install -y sudo nodejs vim wget
+
+# See https://learn.microsoft.com/en-us/azure/devops/pipelines/process/container-phases?view=azure-devops
+LABEL "com.azure.dev.pipelines.agent.handler.node.path"="/usr/bin/node"

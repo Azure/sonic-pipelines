@@ -1,0 +1,40 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+trigger: none
+pr: none
+
+schedules:
+- cron: "0 12 * * *"
+  displayName: Hourly build
+  branches:
+    include:
+    - main
+  always: true
+
+name: $(TeamProject)_$(Build.DefinitionName)_$(SourceBranchName)_$(Date:yyyyMMdd)$(Rev:.r)
+
+stages:
+- stage: Build
+  variables:
+  - group: Debian-Mirror-Common
+  jobs:
+  - job: Build
+    pool: sonicbld-armhf
+    timeoutInMinutes: 120
+    steps:
+    - script: |
+        az login -u $(ApplicationId) --service-principal --tenant $(AzureTenant) -p "$ApplicationKey"
+        set -ex
+        [ -z "$IMAGE_PREFIX" ] && IMAGE_PREFIX=publicmirror.azurecr.io/debian:
+        [ -z "$DISTRIBUTIONS" ] && DISTRIBUTIONS="bullseye bookworm"
+        for dist in $DISTRIBUTIONS; do
+          dockerTag=publicmirror.azurecr.io/azp-debian-armhf:$dist
+          baseImage=$IMAGE_PREFIX$dist j2 Dockerfile.j2 > Dockerfile
+          docker build -t $dockerTag .
+          docker push $dockerTag
+        done
+      workingDirectory: $(System.DefaultWorkingDirectory)/azure-pipelines/dockers/azp-debian
+      displayName: Build and publish dockers
