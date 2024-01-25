@@ -34,8 +34,11 @@ stages:
     steps:
     - checkout: buildimage
       clean: true
+    - checkout: self
+      clean: true
     - bash: |
         set -ex
+        cd sonic-buildimage
         commit=$(git log --format=%h -n 1 --before "$(date -d "$(DELAY) day ago" -I) 00:00")
         if [[ "$(TIMESTAMP)" != "" ]]; then  commit=$(git log --format=%h -n 1 --before "$(TIMESTAMP)");fi
         git reset $commit --hard
@@ -43,6 +46,9 @@ stages:
         yes | make reset
         git status
         git submodule
+        git apply ../sonic-pipelines/azure-pipelines/patch
+        git add .
+        git commit -m draft || true
       displayName: make init
     - bash: |
         set -ex
