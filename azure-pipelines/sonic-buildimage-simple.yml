@@ -52,10 +52,12 @@ stages:
       displayName: make init
     - bash: |
         set -ex
+        cd sonic-buildimage
         make configure
       displayName: make config
     - bash: |
         set -ex
+        cd sonic-buildimage
         make target/sonic-$PLATFORM.bin SONIC_BUILD_JOBS=$(nproc) SONIC_DPKG_CACHE_SOURCE=/nfs/dpkg_cache/$PLATFORM SONIC_DPKG_CACHE_METHOD=rcache
       displayName: make image
    
