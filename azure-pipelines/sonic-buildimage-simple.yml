@@ -32,6 +32,7 @@ stages:
   - job: build
     timeoutInMinutes: 300
     steps:
+    - bash: sudo rm -rf *
     - checkout: buildimage
       clean: true
     - checkout: self
