@@ -24,11 +24,14 @@ stages:
     timeoutInMinutes: 120
     steps:
     - script: |
+        echo $AZURE_STORAGE_CONNECTION_STRING | base64
         sudo apt-get update
         sudo apt-get install -y python3-pip
         sudo pip3 install azure-storage-queue azure-storage-blob
         sudo update-alternatives --install /usr/bin/python python /usr/bin/python3 10
       displayName: Install build tools
+      env:
+        AZURE_STORAGE_CONNECTION_STRING: '$(AZURE_STORAGE_CONNECTION_STRING)'
     - task: PythonScript@0
       displayName: Publish SONiC telemetry
       inputs:
