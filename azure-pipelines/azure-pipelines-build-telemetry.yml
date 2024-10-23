@@ -52,7 +52,7 @@ stages:
           BUILD_LOGS = 'buildlogs'
           BUILD_COVERAGES = 'buildcoverages'
           MESSAGE_PER_PAGE = 10
-          MAX_PAGE_COUNT = 30
+          MAX_PAGE_COUNT = 1
           HEADERS = {"Authorization": "Bearer " + "$(System.AccessToken)"}
           blob_service_client = BlobServiceClient.from_connection_string(AZURE_STORAGE_CONNECTION_STRING)
 
